@@ -1,0 +1,27 @@
+﻿{
+  "$type": "GameLogic.GUI.DebugMenu, GameLogic",
+  "Size": "Screen 1 1",
+  "Childs": [
+    {
+      "$type": "GameCore.GUI.TextControl, GameCore",
+      "Name": "Fps",
+      "Font": "AllodsWest",
+      "FontSize": 14,
+      "Position": "Absolute 5 20"
+    },
+    {
+      "$type": "GameCore.GUI.TextControl, GameCore",
+      "Name": "PlayerPosition",
+      "Font": "AllodsWest",
+      "FontSize": 14,
+      "Position": "Absolute 5 45"
+    },
+    {
+      "$type": "GameCore.GUI.TextControl, GameCore",
+      "Name": "PlayerChunkPosition",
+      "Font": "AllodsWest",
+      "FontSize": 14,
+      "Position": "Absolute 5 70"
+    }
+  ]
+}

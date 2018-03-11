@@ -1,0 +1,8 @@
+D:\Projects\VoxelWorld\GameCore\bin\Release\netcoreapp2.0\GameCore.deps.json
+D:\Projects\VoxelWorld\GameCore\bin\Release\netcoreapp2.0\GameCore.dll
+D:\Projects\VoxelWorld\GameCore\bin\Release\netcoreapp2.0\GameCore.pdb
+D:\Projects\VoxelWorld\GameCore\obj\Release\netcoreapp2.0\GameCore.csproj.CoreCompileInputs.cache
+D:\Projects\VoxelWorld\GameCore\obj\Release\netcoreapp2.0\GameCore.AssemblyInfoInputs.cache
+D:\Projects\VoxelWorld\GameCore\obj\Release\netcoreapp2.0\GameCore.AssemblyInfo.cs
+D:\Projects\VoxelWorld\GameCore\obj\Release\netcoreapp2.0\GameCore.dll
+D:\Projects\VoxelWorld\GameCore\obj\Release\netcoreapp2.0\GameCore.pdb

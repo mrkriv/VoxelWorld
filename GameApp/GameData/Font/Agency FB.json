@@ -1,0 +1,12 @@
+﻿{
+  "FontName": "Agency FB",
+  "FontSize": 14,
+  "AtlasWidth": 512,
+  "AtlasHeight": 512,
+  "AtlasOffsetX": 2,
+  "AtlasOffsetY": 2,
+  "CharRanges": [
+    "32-127",
+    "1024-1279"
+  ]
+}

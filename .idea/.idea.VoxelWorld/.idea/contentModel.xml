@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\RealityShift7\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_VoxelWorld.-673462700.00" t="ExcludeRecursive" />
+    <e p="D:\Projects\VoxelWorld" t="IncludeFlat">
+      <e p="GameApp" t="IncludeRecursive">
+        <e p="appconfig.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="GameApp.csproj" t="IncludeRecursive" />
+        <e p="GameData" t="Include">
+          <e p="font" t="Include">
+            <e p="Agency FB.json" t="Include" />
+            <e p="AllodsWest.json" t="Include" />
+            <e p="AllodsWest.ttf" t="Include" />
+            <e p="Arial.json" t="Include" />
+          </e>
+          <e p="gui" t="Include">
+            <e p="debug_menu.json" t="Include" />
+          </e>
+          <e p="shaders" t="Include">
+            <e p="block" t="Include">
+              <e p="fs.glsl" t="Include" />
+              <e p="vs.glsl" t="Include" />
+            </e>
+            <e p="gui" t="Include">
+              <e p="fs.glsl" t="Include" />
+              <e p="vs.glsl" t="Include" />
+            </e>
+          </e>
+          <e p="textures" t="Include">
+            <e p="Cursor.png" t="Include" />
+            <e p="terrain.png" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Release" t="Include">
+            <e p="netcoreapp2.0" t="Include">
+              <e p="GameApp.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+      </e>
+      <e p="GameCore" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="entity" t="Include">
+          <e p="Actor.cs" t="Include" />
+          <e p="Block.cs" t="Include" />
+          <e p="Camera.cs" t="Include" />
+          <e p="Chunk.cs" t="Include" />
+          <e p="ChunkManager.cs" t="Include" />
+          <e p="Entity.cs" t="Include" />
+          <e p="Grid.cs" t="Include" />
+          <e p="World.cs" t="Include" />
+        </e>
+        <e p="GameCore.csproj" t="IncludeRecursive" />
+        <e p="gui" t="Include">
+          <e p="Control.cs" t="Include" />
+          <e p="CursorControl.cs" t="Include" />
+          <e p="Font.cs" t="Include" />
+          <e p="FontManager.cs" t="Include" />
+          <e p="GuiVector.cs" t="Include" />
+          <e p="Range.cs" t="Include" />
+          <e p="RootControl.cs" t="Include" />
+          <e p="TextControl.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Release" t="Include">
+            <e p="netcoreapp2.0" t="Include">
+              <e p="GameCore.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Render" t="Include">
+          <e p="MaterialManager.cs" t="Include" />
+          <e p="Materials" t="Include">
+            <e p="BaseMaterial.cs" t="Include" />
+            <e p="BlockMaterial.cs" t="Include" />
+            <e p="UserInterfaceMaterial.cs" t="Include" />
+          </e>
+          <e p="Ray.cs" t="Include" />
+          <e p="RayTraceResult.cs" t="Include" />
+          <e p="Texture.cs" t="Include" />
+          <e p="TextureCoord.cs" t="Include" />
+          <e p="TextureManager.cs" t="Include" />
+          <e p="Viewport.cs" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="Config.cs" t="Include" />
+          <e p="DependencyInjection.cs" t="Include" />
+          <e p="Extensions" t="Include">
+            <e p="VectorExtensions.cs" t="Include" />
+          </e>
+          <e p="InputManager.cs" t="Include" />
+          <e p="JsonConverters" t="Include">
+            <e p="ColorConverter.cs" t="Include" />
+            <e p="FontConverter.cs" t="Include" />
+            <e p="GuiVectorConverter.cs" t="Include" />
+            <e p="RangeConverter.cs" t="Include" />
+            <e p="TextureConverter.cs" t="Include" />
+          </e>
+          <e p="Rand.cs" t="Include" />
+        </e>
+      </e>
+      <e p="GameLogic" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="entity" t="Include">
+          <e p="Characters" t="Include">
+            <e p="Player.cs" t="Include" />
+          </e>
+          <e p="Global" t="Include">
+            <e p="TestWorld.cs" t="Include" />
+          </e>
+        </e>
+        <e p="GameLogic.csproj" t="IncludeRecursive" />
+        <e p="gui" t="Include">
+          <e p="DebugMenu.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Release" t="Include">
+            <e p="netcoreapp2.0" t="Include">
+              <e p="GameLogic.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="VoxelWorld.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
