@@ -1,10 +1,10 @@
 ﻿{
   "Path": {
     "Gamedata": "GameData",
-    "Textures": "GameData\\Textures",
-    "Shaders": "GameData\\Shaders",
-    "UserInterface": "GameData\\GUI",
-    "Font": "GameData\\Font"
+    "Textures": "Textures",
+    "Shaders": "Shaders",
+    "UserInterface": "GUI",
+    "Font": "Font"
   },
   "Chunk": {
     "ViewDistance": 4,

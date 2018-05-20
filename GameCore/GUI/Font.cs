@@ -7,6 +7,7 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using GameCore.Render;
 using Newtonsoft.Json;
 using RectangleF = OpenTK.RectangleF;
@@ -53,7 +54,7 @@ namespace GameCore.GUI
                 return;
             }
 
-            var desc = JsonConvert.DeserializeObject<FontDescription>(File.ReadAllText(descFile));
+            var desc = JsonConvert.DeserializeObject<FontDescription>(File.ReadAllText(descFile, Encoding.UTF8));
             BaseFontSize = desc.FontSize;
             Name = desc.FontName;
 

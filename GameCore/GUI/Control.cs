@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using GameCore.Entity;
 using GameCore.Render;
 using GameCore.Render.Materials;
@@ -61,7 +62,7 @@ namespace GameCore.GUI
         public static Control AttachInFile(Control parrent, string file)
         {
             var cfg = parrent.RootControl.Config;
-            var content = File.ReadAllText(Path.Combine(cfg.Path.UserInterface, file + ".json"));
+            var content = File.ReadAllText(Path.Combine(cfg.Path.UserInterface, file + ".json"), Encoding.UTF8);
 
             var control = JsonConvert.DeserializeObject<Control>(content);
 

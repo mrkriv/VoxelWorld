@@ -234,7 +234,7 @@ FakesAssemblies/
 # Visual Studio 6 build log
 *.plg
 
-# Visual Studio 6 workspace options file
+# Visual Studio 6 workspace options file 
 *.opt
 
 # Visual Studio LightSwitch build output
@@ -264,3 +264,5 @@ __pycache__/
 *.pyc
 
 .idea/
+
+build/

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -28,10 +29,10 @@ namespace GameCore.Render.Materials
         {
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
-
-            GL.ShaderSource(fragmentShaderHandle, File.ReadAllText(fsPath));
-            GL.ShaderSource(vertexShaderHandle, File.ReadAllText(vsPath));
-
+            
+            GL.ShaderSource(fragmentShaderHandle, File.ReadAllText(fsPath, Encoding.UTF8));
+            GL.ShaderSource(vertexShaderHandle, File.ReadAllText(vsPath, Encoding.UTF8));
+            
             GL.CompileShader(vertexShaderHandle);
             GL.CompileShader(fragmentShaderHandle);
 

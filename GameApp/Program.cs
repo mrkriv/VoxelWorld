@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using GameCore.Entity;
 using GameCore.GUI;
 using GameCore.Render;
@@ -16,7 +17,7 @@ namespace GameApp
         {
             var di = new DependencyInjection();
 
-            di.AddSinglton(JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json")));
+            di.AddSinglton(JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json", Encoding.UTF8)));
             
             di.AddSinglton<Viewport>();
             di.AddSinglton<InputManager>();
