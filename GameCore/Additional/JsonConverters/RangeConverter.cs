@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using GameCore.GUI;
+using GameCore.EMath;
 using Newtonsoft.Json;
 
-namespace GameCore.Services.JsonConverters
+namespace GameCore.Additional.JsonConverters
 {
     public class RangeConverter : JsonConverter<Range>
     {

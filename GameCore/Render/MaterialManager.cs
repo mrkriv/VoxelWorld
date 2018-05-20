@@ -36,7 +36,7 @@ namespace GameCore.Render
             var fs = Path.Combine(_config.Path.Shaders, name, "fs.glsl");
             var vs = Path.Combine(_config.Path.Shaders, name, "vs.glsl");
 
-            var mtl = Activator.CreateInstance(typeof(T), fs, vs) as BaseMaterial;
+            var mtl = Activator.CreateInstance(typeof(T), fs, vs) as BaseMaterial;    //todo: поменять на что то более производительное
             _storage.Add(name, mtl);
 
             return mtl as T;

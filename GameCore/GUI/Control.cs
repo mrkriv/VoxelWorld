@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using GameCore.EMath;
 using GameCore.Entity;
 using GameCore.Render;
 using GameCore.Render.Materials;

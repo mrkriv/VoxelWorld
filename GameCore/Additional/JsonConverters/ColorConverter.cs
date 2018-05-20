@@ -3,7 +3,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using OpenTK.Graphics;
 
-namespace GameCore.Services.JsonConverters
+namespace GameCore.Additional.JsonConverters
 {
     public class ColorConverter : JsonConverter<Color4>
     {

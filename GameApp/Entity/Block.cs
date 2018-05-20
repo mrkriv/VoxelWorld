@@ -1,7 +1,7 @@
 ﻿using System;
 using GameCore.Render;
 
-namespace GameCore.Entity
+namespace GameApp.Entity
 {
     public class BlockStaticData
     {

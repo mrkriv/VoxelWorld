@@ -1,4 +1,5 @@
 ﻿using System;
+using GameCore.EMath;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;

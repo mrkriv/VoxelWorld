@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using GameCore.EMath;
+using OpenTK.Graphics;
 
 namespace GameCore.GUI
 {

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection.Metadata;
+using GameCore.Additional.JsonConverters;
 using GameCore.Entity;
 using GameCore.GUI;
 using GameCore.Services;
-using GameCore.Services.JsonConverters;
 using Newtonsoft.Json;
 using OpenTK;
 using OpenTK.Graphics;
@@ -15,7 +14,7 @@ using OpenTK.Input;
 
 namespace GameCore.Render
 {
-    public class Viewport : GameWindow
+    public class AppWindow : GameWindow
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly MaterialManager _materialManager;
@@ -25,13 +24,13 @@ namespace GameCore.Render
         private readonly RootControl _rootControl;
         private readonly World _world;
 
-        public Viewport(
+        public AppWindow(
             World world,
-            InputManager inputManager,
-            RootControl rootControl,
-            MaterialManager materialManager,
             FontManager fontManager,
-            TextureManager textureManager)
+            RootControl rootControl,
+            InputManager inputManager,
+            TextureManager textureManager,
+            MaterialManager materialManager)
             : base(720, 480, GraphicsMode.Default, "Voxel World")
         {
             VSync = VSyncMode.On;
@@ -45,7 +44,7 @@ namespace GameCore.Render
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
-                Converters = new List<JsonConverter>
+                Converters = new List<JsonConverter>    // todo: придумать что то более удобное
                 {
                     new TextureConverter(textureManager),
                     new FontConverter(_fontManager),
@@ -59,8 +58,6 @@ namespace GameCore.Render
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
-            Block.RegStandartBlocks();
 
             GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
             GL.Enable(EnableCap.DepthTest);

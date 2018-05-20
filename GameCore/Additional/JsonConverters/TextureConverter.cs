@@ -2,7 +2,7 @@
 using GameCore.Render;
 using Newtonsoft.Json;
 
-namespace GameCore.Services.JsonConverters
+namespace GameCore.Additional.JsonConverters
 {
     public class TextureConverter : JsonConverter<Texture>
     {

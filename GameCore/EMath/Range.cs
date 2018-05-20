@@ -1,4 +1,4 @@
-﻿namespace GameCore.GUI
+﻿namespace GameCore.EMath
 {
     public struct Range
     {

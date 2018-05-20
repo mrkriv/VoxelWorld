@@ -1,7 +1,8 @@
 ﻿using System;
+using GameCore.GUI;
 using OpenTK;
 
-namespace GameCore.GUI
+namespace GameCore.EMath
 {
     public enum GuiVectorType
     {

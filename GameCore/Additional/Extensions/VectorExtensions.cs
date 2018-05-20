@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace GameCore.Services.Extensions
+namespace GameCore.Additional.Extensions
 {
     public static class VectorExtensions
     {

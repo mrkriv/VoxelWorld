@@ -6,11 +6,10 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
+using GameCore.EMath;
 using GameCore.Render;
 using Newtonsoft.Json;
-using RectangleF = OpenTK.RectangleF;
 
 namespace GameCore.GUI
 {

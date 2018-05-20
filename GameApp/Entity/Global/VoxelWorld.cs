@@ -1,14 +1,16 @@
-﻿using GameCore.Entity;
+﻿using GameApp.Entity.Characters;
+using GameCore.Entity;
 using GameCore.GUI;
 using GameCore.Render;
 using GameCore.Services;
-using GameLogic.Entity.Characters;
 
-namespace GameLogic.Entity.Global
+namespace GameApp.Entity.Global
 {
-    public class TestWorld : World
+    public class VoxelWorld : World
     {
-        public TestWorld(
+        public ChunkManager ChunkManager { get; protected set; }
+        
+        public VoxelWorld(
             InputManager inputManager,
             RootControl rootControl,
             MaterialManager materialManager,

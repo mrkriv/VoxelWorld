@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace GameCore.Services
+namespace GameCore.EMath
 {
-    public class Rand
+    public class Noise
     {
         readonly byte[] _permutationTable;
 
-        public Rand(int seed = 0)
+        public Noise(int seed = 0)
         {
             var rand = new System.Random(seed);
             _permutationTable = new byte[1024];
@@ -41,8 +41,11 @@ namespace GameCore.Services
         {
             return a[0] * b[0] + a[1] * b[1];
         }
+        
+        public float this[float fx, float fy] => Get(fx, fy);
+        public float this[float fx, float fy, int octaves, float persistence] => Get(fx, fy, octaves, persistence);
 
-        public float Noise(float fx, float fy)
+        public float Get(float fx, float fy)
         {
             var left = (int) System.Math.Floor(fx);
             var top = (int) System.Math.Floor(fy);
@@ -74,7 +77,7 @@ namespace GameCore.Services
             return tb;
         }
 
-        public float Noise(float fx, float fy, int octaves, float persistence = 0.5f)
+        public float Get(float fx, float fy, int octaves, float persistence = 0.5f)
         {
             float amplitude = 1;
             float max = 0;
@@ -83,7 +86,7 @@ namespace GameCore.Services
             while (octaves-- > 0)
             {
                 max += amplitude;
-                result += Noise(fx, fy) * amplitude;
+                result += Get(fx, fy) * amplitude;
                 amplitude *= persistence;
                 fx *= 2;
                 fy *= 2;

@@ -1,7 +1,7 @@
-﻿using GameCore.Entity;
+﻿using GameApp.Entity;
 using OpenTK;
 
-namespace GameCore.Render
+namespace GameApp.EMath
 {
     public class RayTraceResult
     {

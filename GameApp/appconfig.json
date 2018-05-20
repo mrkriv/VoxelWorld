@@ -1,6 +1,6 @@
 ﻿{
   "Path": {
-    "Gamedata": "GameData",
+    "Gamedata": "gamedata",
     "Textures": "Textures",
     "Shaders": "Shaders",
     "UserInterface": "GUI",

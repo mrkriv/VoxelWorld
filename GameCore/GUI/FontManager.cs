@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using GameCore.Render;
 using GameCore.Services;
 
 namespace GameCore.GUI

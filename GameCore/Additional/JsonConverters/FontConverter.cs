@@ -1,9 +1,8 @@
 ﻿using System;
 using GameCore.GUI;
-using GameCore.Render;
 using Newtonsoft.Json;
 
-namespace GameCore.Services.JsonConverters
+namespace GameCore.Additional.JsonConverters
 {
     public class FontConverter : JsonConverter<Font>
     {

@@ -2,12 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
-using GameCore.Render;
+using GameApp.EMath;
+using GameCore.EMath;
 using OpenTK;
 
-namespace GameCore.Entity
+namespace GameApp.Entity
 {
-    public class ChunkManager : Entity
+    public class ChunkManager : GameCore.Entity.Entity
     {
         private readonly ConcurrentQueue<Chunk> _generateQueue = new ConcurrentQueue<Chunk>();
         private readonly List<Chunk> _storage = new List<Chunk>();

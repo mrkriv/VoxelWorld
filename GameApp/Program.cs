@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using GameApp.Entity.Global;
+using GameApp.Services;
 using GameCore.Entity;
 using GameCore.GUI;
 using GameCore.Render;
 using GameCore.Services;
-using GameLogic.Entity.Global;
 using Newtonsoft.Json;
 
 namespace GameApp
@@ -19,15 +20,15 @@ namespace GameApp
 
             di.AddSinglton(JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json", Encoding.UTF8)));
             
-            di.AddSinglton<Viewport>();
+            di.AddSinglton<AppWindow, VoxelWorldWindow>();
             di.AddSinglton<InputManager>();
             di.AddSinglton<RootControl>();
             di.AddSinglton<MaterialManager>();
             di.AddSinglton<TextureManager>();
             di.AddSinglton<FontManager>();
-            di.AddTransient<World, TestWorld>();
+            di.AddTransient<World, VoxelWorld>();
 
-            var game = di.GetService<Viewport>();
+            var game = di.GetService<AppWindow>();
             game.Run();
         }
     }

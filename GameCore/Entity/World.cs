@@ -10,7 +10,6 @@ namespace GameCore.Entity
     {
         private readonly List<Entity> _gameObjects = new List<Entity>();
 
-        public ChunkManager ChunkManager { get; protected set; }
         public InputManager InputManager { get; }
         public RootControl RootControl { get; }
         public MaterialManager MaterialManager { get; }

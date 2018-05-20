@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Bitmap = System.Drawing.Bitmap;
-using Image = System.Drawing.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
 

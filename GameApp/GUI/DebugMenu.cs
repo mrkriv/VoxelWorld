@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using GameCore.GUI;
 
-namespace GameLogic.GUI
+namespace GameApp.GUI
 {
     public class DebugMenu : Control
     {

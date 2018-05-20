@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using GameCore.GUI;
 using GameCore.Services;
 
 namespace GameCore.Render

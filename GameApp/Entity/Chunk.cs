@@ -1,13 +1,14 @@
 ﻿using System;
+using GameApp.Entity.Global;
+using GameCore.EMath;
 using GameCore.Render;
 using GameCore.Render.Materials;
-using GameCore.Services;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace GameCore.Entity
+namespace GameApp.Entity
 {
-    public class Chunk : Entity
+    public class Chunk : GameCore.Entity.Entity
     {
         private uint _vaoHandle;
         private int _indexCount;
@@ -23,10 +24,10 @@ namespace GameCore.Entity
         public int X { get; }
         public int Y { get; }
 
-        public Chunk FrontChunk => World.ChunkManager.GetChunk(X + 1, Y);
-        public Chunk BackChunk => World.ChunkManager.GetChunk(X - 1, Y);
-        public Chunk RightChunk => World.ChunkManager.GetChunk(X, Y + 1);
-        public Chunk LeftChunk => World.ChunkManager.GetChunk(X, Y - 1);
+        public Chunk FrontChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X + 1, Y);
+        public Chunk BackChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X - 1, Y);
+        public Chunk RightChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X, Y + 1);
+        public Chunk LeftChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X, Y - 1);
 
         private int ChunkSizeH => World.Config.Chunk.ChunkSizeW;
         private int ChunkSizeV => World.Config.Chunk.ChunkSizeH;
@@ -73,7 +74,7 @@ namespace GameCore.Entity
 
         public void Generated()
         {
-            var rand = new Rand(10);
+            var rand = new Noise(10);
 
             var blockGrass = Block.FindByName("grass");
             var blockDirt = Block.FindByName("dirt");
@@ -84,8 +85,8 @@ namespace GameCore.Entity
             {
                 for (var y = 0; y < ChunkSizeH; y++)
                 {
-                    var noise = rand.Noise((X * ChunkSizeH + x) / 50f, (Y * ChunkSizeH + y) / 50f);
-                    var noise2 = rand.Noise((X * ChunkSizeH + x) / 20f, (Y * ChunkSizeH + y) / 20f);
+                    var noise = rand[(X * ChunkSizeH + x) / 50f, (Y * ChunkSizeH + y) / 50f];
+                    var noise2 = rand[(X * ChunkSizeH + x) / 20f, (Y * ChunkSizeH + y) / 20f];
 
                     var groundLevel = (int) (ChunkSizeV * .5f + noise * ChunkSizeV * .2f);
                     var adminiumLevel = (int) (1 + noise2 * 3);

@@ -1,5 +1,5 @@
 ﻿{
-  "$type": "GameLogic.GUI.DebugMenu, GameLogic",
+  "$type": "GameApp.GUI.DebugMenu, GameApp",
   "Size": "Screen 1 1",
   "Childs": [
     {

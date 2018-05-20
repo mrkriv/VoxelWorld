@@ -1,12 +1,14 @@
 ﻿using System;
+using GameApp.EMath;
+using GameApp.Entity.Global;
+using GameCore.EMath;
 using GameCore.Entity;
 using GameCore.GUI;
-using GameCore.Render;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
-namespace GameLogic.Entity.Characters
+namespace GameApp.Entity.Characters
 {
     public class Player : Actor
     {
@@ -77,7 +79,7 @@ namespace GameLogic.Entity.Characters
                 MathF.Cos(Rotation.X) * MathF.Cos(Rotation.Y),
                 MathF.Sin(Rotation.Y)).Normalized());
 
-            _forwardRayTrace = World.ChunkManager.RayTrace(ray, 10);
+            _forwardRayTrace = ((VoxelWorld)World).ChunkManager.RayTrace(ray, 10);
             _logButtom.Text = _forwardRayTrace.Block.StaticData.Name;
 
             var delta = _lastMousePos - new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
@@ -127,9 +129,12 @@ namespace GameLogic.Entity.Characters
         {
             base.OnRender();
 
-            if (_forwardRayTrace.Block.Id == 0)
-                return;
-            
+            if (_forwardRayTrace.Block.Id > 0)
+                DrawBoxDebug();
+        }
+
+        private void DrawBoxDebug()
+        {
             GL.UseProgram(0);
             var modelview = Camera.ActiveCamera.ViewMatrix;
 
