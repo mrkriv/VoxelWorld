@@ -14,7 +14,6 @@ namespace GameApp.Entity
         private readonly List<Chunk> _storage = new List<Chunk>();
         private readonly List<Thread> _updateThreads = new List<Thread>();
         private bool _threadsEnable;
-        public int ViewDistance => World.Config.Chunk.ViewDistance;
 
         public ChunkManager()
         {
@@ -27,13 +26,11 @@ namespace GameApp.Entity
 
             for (var i = 0; i < 3; i++)
             {
-                var thread = new Thread(UpdateLoop)
+                _updateThreads.Add(new Thread(UpdateLoop)
                 {
                     IsBackground = true,
                     Priority = ThreadPriority.BelowNormal
-                };
-
-                _updateThreads.Add(thread);
+                });
             }
 
             _threadsEnable = true;
@@ -44,18 +41,14 @@ namespace GameApp.Entity
         {
             while (_threadsEnable)
             {
-                if (_updateQueue.Count == 0)
+                while (_updateQueue.TryDequeue(out var chunk))
                 {
-                    Thread.Sleep(16);
-                    continue;
+                    if (chunk.Status == ChunkStatus.InvalidMesh)
+                        chunk.UpdateMesh();
+                    else if (chunk.Status == ChunkStatus.InvalidGenerated)
+                        chunk.Generated();
                 }
-
-                _updateQueue.TryDequeue(out var chunk);
-
-                if (chunk.Status == ChunkStatus.InvalidMesh)
-                    chunk.UpdateMesh();
-                else if (chunk.Status == ChunkStatus.InvalidGenerated)
-                    chunk.Generated();
+                Thread.Sleep(16);
             }
         }
 
@@ -99,20 +92,21 @@ namespace GameApp.Entity
             base.OnTick(dt);
 
             var origin = World.FindByName("Player").ChunkPosition;
+            var viewDistance = World.Config.Chunk.ViewDistance;
 
             foreach (var chunk in _storage)
             {
-                if (chunk.Visiable && (origin - new Vector2(chunk.X, chunk.Y)).LengthFast > ViewDistance)
+                if (chunk.Visiable && (origin - new Vector2(chunk.X, chunk.Y)).LengthFast > viewDistance)
                 {
                     chunk.Visiable = false;
                 }
             }
-
-            for (var x = (int) origin.X - ViewDistance; x < origin.X + ViewDistance; x++)
+            
+            for (var x = (int) origin.X - viewDistance; x < origin.X + viewDistance; x++)
             {
-                for (var y = (int) origin.Y - ViewDistance; y < origin.Y + ViewDistance; y++)
+                for (var y = (int) origin.Y - viewDistance; y < origin.Y + viewDistance; y++)
                 {
-                    if ((origin - new Vector2(x, y)).LengthFast > ViewDistance)
+                    if ((origin - new Vector2(x, y)).LengthFast > viewDistance)
                         continue;
 
                     var chunk = GetChunk(x, y);
@@ -121,31 +115,30 @@ namespace GameApp.Entity
             }
         }
 
-        private int ChunkSizeH => World.Config.Chunk.ChunkSizeW;
-        private int ChunkSizeV => World.Config.Chunk.ChunkSizeH;
-        private int ChunkScale => World.Config.Chunk.ChunkScale;
-
         public RayTraceResult RayTrace(Ray ray, int distance)
         {
+            var chunkSizeH = World.Config.Chunk.ChunkSizeW;
+            var chunkSizeV = World.Config.Chunk.ChunkSizeH;
+            var chunkScale = World.Config.Chunk.ChunkScale;
             var point = ray.Origin;
 
             for (var i = 0; i < distance; i++)
             {
-                if (point.Z > ChunkSizeV * ChunkScale || point.Z < 0)
+                if (point.Z > chunkSizeV * chunkScale || point.Z < 0)
                     return new RayTraceResult();
 
-                var chunsPosX = (int) Math.Floor(point.X / ChunkSizeH / ChunkScale);
-                var chunsPosY = (int) Math.Floor(point.Y / ChunkSizeH / ChunkScale);
+                var chunsPosX = (int) Math.Floor(point.X / chunkSizeH / chunkScale);
+                var chunsPosY = (int) Math.Floor(point.Y / chunkSizeH / chunkScale);
 
                 var chunk = GetChunk(chunsPosX, chunsPosY);
 
-                var chunsLocalPosX = point.X / ChunkScale - chunsPosX * ChunkSizeH;
-                var chunsLocalPosY = point.Y / ChunkScale - chunsPosY * ChunkSizeH;
+                var chunsLocalPosX = point.X / chunkScale - chunsPosX * chunkSizeH;
+                var chunsLocalPosY = point.Y / chunkScale - chunsPosY * chunkSizeH;
 
                 var block = chunk.GetBlockLocalSpace(
                     (int) Math.Floor(chunsLocalPosX),
                     (int) Math.Floor(chunsLocalPosY),
-                    (int) Math.Floor(point.Z / ChunkScale));
+                    (int) Math.Floor(point.Z / chunkScale));
 
                 if (block.Id != 0)
                 {
@@ -157,15 +150,15 @@ namespace GameApp.Entity
                         BlockChunkPosition = new Vector3(
                             MathF.Floor(chunsLocalPosX),
                             MathF.Floor(chunsLocalPosY),
-                            MathF.Floor(point.Z / ChunkScale)),
+                            MathF.Floor(point.Z / chunkScale)),
                         BlockWorldPosition = new Vector3(
-                            MathF.Floor(chunsLocalPosX) + chunsPosX * ChunkSizeH,
-                            MathF.Floor(chunsLocalPosY) + chunsPosY * ChunkSizeH,
-                            MathF.Floor(point.Z / ChunkScale)),
+                            MathF.Floor(chunsLocalPosX) + chunsPosX * chunkSizeH,
+                            MathF.Floor(chunsLocalPosY) + chunsPosY * chunkSizeH,
+                            MathF.Floor(point.Z / chunkScale)),
                     };
                 }
 
-                point += ray.Direction * ChunkScale;
+                point += ray.Direction * chunkScale;
             }
 
             return new RayTraceResult();

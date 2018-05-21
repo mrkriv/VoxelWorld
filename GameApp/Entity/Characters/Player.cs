@@ -48,7 +48,7 @@ namespace GameApp.Entity.Characters
         {
             if (button == MouseButton.Left)
             {
-                if (_forwardRayTrace.Chunk != null && _forwardRayTrace.Chunk.Visiable)
+                if (_forwardRayTrace?.Chunk?.Visiable == true)
                 {
                     _forwardRayTrace.Chunk.SetBlock(_forwardRayTrace.BlockChunkPosition, Block.FindByName("void"));
                 }
@@ -59,7 +59,8 @@ namespace GameApp.Entity.Characters
         {
             if (key == Key.BackSpace)
             {
-                _logTop.Text = _logTop.Text.Substring(0, _logTop.Text.Length - 1);
+                if (_logTop.Text.Length > 0)
+                    _logTop.Text = _logTop.Text.Substring(0, _logTop.Text.Length - 1);
             }
             else if (key.ToString().Length == 1)
             {

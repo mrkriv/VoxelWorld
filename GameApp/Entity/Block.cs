@@ -29,6 +29,7 @@ namespace GameApp.Entity
         {
             name = name.ToLower();
 
+            //todo: use dictionary
             for (byte i = 0; i < BlockStaticDatas.Length; i++)
             {
                 if (BlockStaticDatas[i]?.Name == name)

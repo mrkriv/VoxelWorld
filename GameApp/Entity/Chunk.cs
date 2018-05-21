@@ -15,21 +15,16 @@ namespace GameApp.Entity
         InvalidMesh,
         ProcessUpdateMesh,
 
-        InvalidVbo,
-        ProcessUpdateVbo,
-
         Active,
     }
 
     public class Chunk : GameCore.Entity.Entity
     {
-        private uint _vaoHandle;
-        private int _indexCount;
-        private int _vertexsCount;
-        private int _normalsCount;
-        private int _texcoodCount;
         private BlockMaterial _material;
+        private Texture _diffTexture;
+        private Matrix4 _transform;
         private Block[,,] _map;
+        private Mesh _mesh;
 
         public ChunkStatus Status { get; private set; }
         public int X { get; }
@@ -44,13 +39,6 @@ namespace GameApp.Entity
         private int ChunkSizeH => World.Config.Chunk.ChunkSizeW;
         private int ChunkSizeV => World.Config.Chunk.ChunkSizeH;
         private int ChunkScale => World.Config.Chunk.ChunkScale;
-
-        private Texture _diffTexture;
-        private Matrix4 _transform;
-        private Vector3[] _vertexs;
-        private Vector3[] _normals;
-        private Vector2[] _texcood;
-        private int[] _indices;
 
         public Chunk(int x, int y)
         {
@@ -109,6 +97,133 @@ namespace GameApp.Entity
             Status = ChunkStatus.InvalidMesh;
         }
 
+        public void UpdateMesh()
+        {
+            Status = ChunkStatus.ProcessUpdateMesh;
+
+            var vertexs = new Vector3[4 * 6 * ChunkSizeH * ChunkSizeH * ChunkSizeV];
+            var normals = new Vector3[vertexs.Length];
+            var texcood = new Vector2[vertexs.Length];
+
+            var vertexsCount = 0;
+            var normalsCount = 0;
+            var texcoodCount = 0;
+                
+            for (var x = 0; x < ChunkSizeH; x++)
+            {
+                for (var y = 0; y < ChunkSizeH; y++)
+                {
+                    for (var z = 0; z < ChunkSizeV; z++)
+                    {
+                        var block = GetBlockLocalSpace(x, y, z);
+
+                        if (block.Id == 0)
+                            continue;
+
+                        if (GetBlockLocalSpace(x, y, z - 1).Id == 0)
+                        {
+                            vertexs[vertexsCount++] = new Vector3(x, y, z); //buttom
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z);
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z);
+
+                            normals[normalsCount++] = new Vector3(0, 0, -1);
+                            normals[normalsCount++] = new Vector3(0, 0, -1);
+                            normals[normalsCount++] = new Vector3(0, 0, -1);
+                            normals[normalsCount++] = new Vector3(0, 0, -1);
+
+                            block.StaticData.TextureCoord.Buttom.CopyTo(texcood, ref texcoodCount);
+                        }
+
+                        if (GetBlockLocalSpace(x, y, z + 1).Id == 0)
+                        {
+                            vertexs[vertexsCount++] = new Vector3(x, y, z + 1); //top
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
+
+                            normals[normalsCount++] = new Vector3(0, 0, 1);
+                            normals[normalsCount++] = new Vector3(0, 0, 1);
+                            normals[normalsCount++] = new Vector3(0, 0, 1);
+                            normals[normalsCount++] = new Vector3(0, 0, 1);
+
+                            block.StaticData.TextureCoord.Top.CopyTo(texcood, ref texcoodCount);
+                        }
+
+                        if (GetBlockLocalSpace(x, y - 1, z).Id == 0)
+                        {
+                            vertexs[vertexsCount++] = new Vector3(x, y, z); //right
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z);
+                            vertexs[vertexsCount++] = new Vector3(x, y, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z + 1);
+
+                            normals[normalsCount++] = new Vector3(0, -1, 0);
+                            normals[normalsCount++] = new Vector3(0, -1, 0);
+                            normals[normalsCount++] = new Vector3(0, -1, 0);
+                            normals[normalsCount++] = new Vector3(0, -1, 0);
+
+                            block.StaticData.TextureCoord.Right.CopyTo(texcood, ref texcoodCount);
+                        }
+
+                        if (GetBlockLocalSpace(x, y + 1, z).Id == 0)
+                        {
+
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z); //left
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z);
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
+
+                            normals[normalsCount++] = new Vector3(0, 1, 0);
+                            normals[normalsCount++] = new Vector3(0, 1, 0);
+                            normals[normalsCount++] = new Vector3(0, 1, 0);
+                            normals[normalsCount++] = new Vector3(0, 1, 0);
+
+                            block.StaticData.TextureCoord.Left.CopyTo(texcood, ref texcoodCount);
+                        }
+
+                        if (GetBlockLocalSpace(x + 1, y, z).Id == 0)
+                        {
+
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z); //back
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
+
+                            normals[normalsCount++] = new Vector3(1, 0, 0);
+                            normals[normalsCount++] = new Vector3(1, 0, 0);
+                            normals[normalsCount++] = new Vector3(1, 0, 0);
+                            normals[normalsCount++] = new Vector3(1, 0, 0);
+
+                            block.StaticData.TextureCoord.Back.CopyTo(texcood, ref texcoodCount);
+                        }
+
+                        if (GetBlockLocalSpace(x - 1, y, z).Id == 0)
+                        {
+
+                            vertexs[vertexsCount++] = new Vector3(x, y, z); //front
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z);
+                            vertexs[vertexsCount++] = new Vector3(x, y, z + 1);
+                            vertexs[vertexsCount++] = new Vector3(x, y + 1, z + 1);
+
+                            normals[normalsCount++] = new Vector3(-1, 0, 0);
+                            normals[normalsCount++] = new Vector3(-1, 0, 0);
+                            normals[normalsCount++] = new Vector3(-1, 0, 0);
+                            normals[normalsCount++] = new Vector3(-1, 0, 0);
+
+                            block.StaticData.TextureCoord.Front.CopyTo(texcood, ref texcoodCount);
+                        }
+                    }
+                }
+            }
+
+            Array.Resize(ref vertexs, vertexsCount);
+            Array.Resize(ref normals, normalsCount);
+            Array.Resize(ref texcood, texcoodCount);
+            
+            _mesh = new Mesh(vertexs, normals, texcood);
+            Status = ChunkStatus.Active;
+        }
+
         public Block GetBlockLocalSpace(int x, int y, int z)
         {
             if (z < 0 || z >= ChunkSizeV)
@@ -134,204 +249,6 @@ namespace GameApp.Entity
             }
 
             return _map[x, y, z];
-        }
-
-        public void UpdateMesh()
-        {
-            Status = ChunkStatus.ProcessUpdateMesh;
-
-            _indexCount = 0;
-            _vertexsCount = 0;
-            _normalsCount = 0;
-            _texcoodCount = 0;
-
-            _indices = new int[6 * 6 * ChunkSizeH * ChunkSizeH * ChunkSizeV];
-            _vertexs = new Vector3[4 * 6 * ChunkSizeH * ChunkSizeH * ChunkSizeV];
-            _normals = new Vector3[_vertexs.Length];
-            _texcood = new Vector2[_vertexs.Length];
-
-            for (var x = 0; x < ChunkSizeH; x++)
-            {
-                for (var y = 0; y < ChunkSizeH; y++)
-                {
-                    for (var z = 0; z < ChunkSizeV; z++)
-                    {
-                        var block = GetBlockLocalSpace(x, y, z);
-
-                        if (block.Id == 0)
-                            continue;
-
-                        if (GetBlockLocalSpace(x, y, z - 1).Id == 0)
-                        {
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z); //buttom
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z);
-
-                            _normals[_normalsCount++] = new Vector3(0, 0, -1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, -1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, -1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, -1);
-
-                            block.StaticData.TextureCoord.Buttom.CopyTo(_texcood, ref _texcoodCount);
-                        }
-
-                        if (GetBlockLocalSpace(x, y, z + 1).Id == 0)
-                        {
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z + 1); //top
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
-
-                            _normals[_normalsCount++] = new Vector3(0, 0, 1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, 1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, 1);
-                            _normals[_normalsCount++] = new Vector3(0, 0, 1);
-
-                            block.StaticData.TextureCoord.Top.CopyTo(_texcood, ref _texcoodCount);
-                        }
-
-                        if (GetBlockLocalSpace(x, y - 1, z).Id == 0)
-                        {
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z); //right
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z + 1);
-
-
-                            _normals[_normalsCount++] = new Vector3(0, -1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, -1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, -1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, -1, 0);
-
-                            block.StaticData.TextureCoord.Right.CopyTo(_texcood, ref _texcoodCount);
-                        }
-
-                        if (GetBlockLocalSpace(x, y + 1, z).Id == 0)
-                        {
-
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z); //left
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
-
-                            _normals[_normalsCount++] = new Vector3(0, 1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, 1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, 1, 0);
-                            _normals[_normalsCount++] = new Vector3(0, 1, 0);
-
-                            block.StaticData.TextureCoord.Left.CopyTo(_texcood, ref _texcoodCount);
-                        }
-
-                        if (GetBlockLocalSpace(x + 1, y, z).Id == 0)
-                        {
-
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z); //back
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x + 1, y + 1, z + 1);
-
-
-                            _normals[_normalsCount++] = new Vector3(1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(1, 0, 0);
-
-                            block.StaticData.TextureCoord.Back.CopyTo(_texcood, ref _texcoodCount);
-                        }
-
-                        if (GetBlockLocalSpace(x - 1, y, z).Id == 0)
-                        {
-
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z); //front
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y, z + 1);
-                            _vertexs[_vertexsCount++] = new Vector3(x, y + 1, z + 1);
-
-
-                            _normals[_normalsCount++] = new Vector3(-1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(-1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(-1, 0, 0);
-                            _normals[_normalsCount++] = new Vector3(-1, 0, 0);
-
-                            block.StaticData.TextureCoord.Front.CopyTo(_texcood, ref _texcoodCount);
-                        }
-                    }
-                }
-            }
-
-            for (var i = 0; i < _vertexsCount; i += 4)
-            {
-                _indices[_indexCount++] = i + 0;
-                _indices[_indexCount++] = i + 1;
-                _indices[_indexCount++] = i + 2;
-
-                _indices[_indexCount++] = i + 2;
-                _indices[_indexCount++] = i + 3;
-                _indices[_indexCount++] = i + 1;
-            }
-
-            Status = ChunkStatus.InvalidVbo;
-        }
-
-        public void UpdateVbo()
-        {
-            Status = ChunkStatus.ProcessUpdateVbo;
-
-            // VBO
-            GL.GenBuffers(1, out uint vertexHandle);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_vertexsCount * Vector3.SizeInBytes),
-                _vertexs, BufferUsageHint.StaticDraw);
-
-            GL.GenBuffers(1, out uint normalsHandle);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normalsHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_normalsCount * Vector3.SizeInBytes),
-                _normals, BufferUsageHint.StaticDraw);
-
-            GL.GenBuffers(1, out uint texcoodHandle);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, texcoodHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_texcoodCount * Vector2.SizeInBytes),
-                _texcood, BufferUsageHint.StaticDraw);
-
-            GL.GenBuffers(1, out uint indexHandle);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexHandle);
-            GL.BufferData(BufferTarget.ElementArrayBuffer,
-                new IntPtr(sizeof(int) * _indexCount),
-                _indices, BufferUsageHint.StaticDraw);
-
-            // VAO
-            GL.GenVertexArrays(1, out _vaoHandle);
-            GL.BindVertexArray(_vaoHandle);
-
-            GL.EnableVertexAttribArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexHandle);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
-            _material.BindInVertexPosition();
-
-            GL.EnableVertexAttribArray(1);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, normalsHandle);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
-            _material.BindInVertexNormal();
-
-            GL.EnableVertexAttribArray(2);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, texcoodHandle);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, true, Vector2.SizeInBytes, 0);
-            _material.BindInVertexTexcood();
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexHandle);
-
-            GL.BindVertexArray(0);
-
-            _indices = null;
-            _vertexs = null;
-            _normals = null;
-            _texcood = null;
-
-            Status = ChunkStatus.Active;
         }
 
         public void SetBlock(Vector3 blockChunkPosition, Block block)
@@ -364,15 +281,12 @@ namespace GameApp.Entity
                 case ChunkStatus.InvalidMesh:
                     ChunkManager.EnqueueChunkToUpdate(this);
                     break;
-                case ChunkStatus.InvalidVbo:
-                    UpdateVbo();
-                    break;
             }
         }
 
         public override void OnRender()
         {
-            if (_vaoHandle == 0)
+            if (_mesh == null)
                 return;
 
             base.OnRender();
@@ -383,8 +297,7 @@ namespace GameApp.Entity
             _material.Model = _transform;
             _material.Use();
 
-            GL.BindVertexArray(_vaoHandle);
-            GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            _mesh.Render(_material);
         }
     }
 }
