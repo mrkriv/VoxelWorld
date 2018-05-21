@@ -10,11 +10,11 @@ namespace GameApp.Entity
 {
     public class ChunkManager : GameCore.Entity.Entity
     {
-        private readonly ConcurrentQueue<Chunk> _generateQueue = new ConcurrentQueue<Chunk>();
+        private readonly ConcurrentQueue<Chunk> _updateQueue = new ConcurrentQueue<Chunk>();
         private readonly List<Chunk> _storage = new List<Chunk>();
-        private bool _generatorThreadEnable;
-        private Thread _generatorThread;
-        public int ViewDistance =>World.Config.Chunk.ViewDistance;
+        private readonly List<Thread> _updateThreads = new List<Thread>();
+        private bool _threadsEnable;
+        public int ViewDistance => World.Config.Chunk.ViewDistance;
 
         public ChunkManager()
         {
@@ -25,32 +25,44 @@ namespace GameApp.Entity
         {
             base.OnBeginPlay();
 
-            _generatorThread = new Thread(GeneratorLoop);
-            _generatorThread.IsBackground = true;
-            _generatorThread.Priority = ThreadPriority.BelowNormal;
-            _generatorThreadEnable = true;
+            for (var i = 0; i < 3; i++)
+            {
+                var thread = new Thread(UpdateLoop)
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal
+                };
 
-            _generatorThread.Start();
+                _updateThreads.Add(thread);
+            }
+
+            _threadsEnable = true;
+            _updateThreads.ForEach(x => x.Start());
         }
 
-        private void GeneratorLoop()
+        private void UpdateLoop()
         {
-            while (_generatorThreadEnable)
+            while (_threadsEnable)
             {
-                while (_generateQueue.Count != 0)
+                if (_updateQueue.Count == 0)
                 {
-                    _generateQueue.TryDequeue(out var chunk);
-
-                    if (!chunk.IsLoaded && !chunk.IsLoadedStarted)
-                        chunk.Load();
+                    Thread.Sleep(16);
+                    continue;
                 }
+
+                _updateQueue.TryDequeue(out var chunk);
+
+                if (chunk.Status == ChunkStatus.InvalidMesh)
+                    chunk.UpdateMesh();
+                else if (chunk.Status == ChunkStatus.InvalidGenerated)
+                    chunk.Generated();
             }
         }
 
         public override void OnDestroy()
         {
             base.OnDestroy();
-            _generatorThreadEnable = false;
+            _threadsEnable = false;
         }
 
         public Chunk GetChunk(int x, int y)
@@ -71,10 +83,15 @@ namespace GameApp.Entity
             var chunk = new Chunk(x, y);
             chunk.AttachTo(this);
 
-            _generateQueue.Enqueue(chunk);
+            _updateQueue.Enqueue(chunk);
             _storage.Add(chunk);
 
             return chunk;
+        }
+        
+        public void EnqueueChunkToUpdate(Chunk chunk)
+        {
+            _updateQueue.Enqueue(chunk);
         }
 
         public override void OnTick(float dt)
@@ -85,9 +102,9 @@ namespace GameApp.Entity
 
             foreach (var chunk in _storage)
             {
-                if (chunk.IsVisiable && (origin - new Vector2(chunk.X, chunk.Y)).LengthFast > ViewDistance)
+                if (chunk.Visiable && (origin - new Vector2(chunk.X, chunk.Y)).LengthFast > ViewDistance)
                 {
-                    chunk.IsVisiable = false;
+                    chunk.Visiable = false;
                 }
             }
 
@@ -99,12 +116,7 @@ namespace GameApp.Entity
                         continue;
 
                     var chunk = GetChunk(x, y);
-
-                    if (!chunk.IsLoaded && !chunk.IsLoadedStarted)
-                        _generateQueue.Enqueue(chunk);
-
-                    if (chunk.IsLoaded)
-                        chunk.IsVisiable = true;
+                    chunk.Visiable = true;
                 }
             }
         }

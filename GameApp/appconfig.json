@@ -7,7 +7,7 @@
     "Font": "Font"
   },
   "Chunk": {
-    "ViewDistance": 4,
+    "ViewDistance": 7,
     "ChunkSizeW": 16,
     "ChunkSizeH": 96,
     "ChunkScale": 5

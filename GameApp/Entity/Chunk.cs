@@ -1,5 +1,4 @@
 ﻿using System;
-using GameApp.Entity.Global;
 using GameCore.EMath;
 using GameCore.Render;
 using GameCore.Render.Materials;
@@ -8,6 +7,20 @@ using OpenTK.Graphics.OpenGL;
 
 namespace GameApp.Entity
 {
+    public enum ChunkStatus
+    {
+        InvalidGenerated,
+        ProcessGenerated,
+
+        InvalidMesh,
+        ProcessUpdateMesh,
+
+        InvalidVbo,
+        ProcessUpdateVbo,
+
+        Active,
+    }
+
     public class Chunk : GameCore.Entity.Entity
     {
         private uint _vaoHandle;
@@ -18,16 +31,15 @@ namespace GameApp.Entity
         private BlockMaterial _material;
         private Block[,,] _map;
 
-        public bool IsLoadedStarted { get; private set; }
-        public bool IsGenerated { get; private set; }
-        public bool IsLoaded { get; private set; }
+        public ChunkStatus Status { get; private set; }
         public int X { get; }
         public int Y { get; }
 
-        public Chunk FrontChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X + 1, Y);
-        public Chunk BackChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X - 1, Y);
-        public Chunk RightChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X, Y + 1);
-        public Chunk LeftChunk => ((VoxelWorld)World).ChunkManager.GetChunk(X, Y - 1);
+        public ChunkManager ChunkManager => ((VoxelWorld) World).ChunkManager;
+        public Chunk FrontChunk => ChunkManager.GetChunk(X + 1, Y);
+        public Chunk BackChunk => ChunkManager.GetChunk(X - 1, Y);
+        public Chunk RightChunk => ChunkManager.GetChunk(X, Y + 1);
+        public Chunk LeftChunk => ChunkManager.GetChunk(X, Y - 1);
 
         private int ChunkSizeH => World.Config.Chunk.ChunkSizeW;
         private int ChunkSizeV => World.Config.Chunk.ChunkSizeH;
@@ -42,10 +54,9 @@ namespace GameApp.Entity
 
         public Chunk(int x, int y)
         {
+            Status = ChunkStatus.InvalidGenerated;
             X = x;
             Y = y;
-            IsVisiable = false;
-            IsLoaded = false;
         }
 
         public override void OnBeginPlay()
@@ -61,19 +72,9 @@ namespace GameApp.Entity
                          Matrix4.CreateScale(ChunkScale);
         }
 
-        public void Load()
-        {
-            IsLoadedStarted = true;
-
-            if (!IsGenerated)
-                Generated();
-
-            UpdateMesh();
-            IsLoaded = true;
-        }
-
         public void Generated()
         {
+            Status = ChunkStatus.ProcessGenerated;
             var rand = new Noise(10);
 
             var blockGrass = Block.FindByName("grass");
@@ -105,7 +106,7 @@ namespace GameApp.Entity
                 }
             }
 
-            IsGenerated = true;
+            Status = ChunkStatus.InvalidMesh;
         }
 
         public Block GetBlockLocalSpace(int x, int y, int z)
@@ -137,6 +138,8 @@ namespace GameApp.Entity
 
         public void UpdateMesh()
         {
+            Status = ChunkStatus.ProcessUpdateMesh;
+
             _indexCount = 0;
             _vertexsCount = 0;
             _normalsCount = 0;
@@ -267,10 +270,14 @@ namespace GameApp.Entity
                 _indices[_indexCount++] = i + 3;
                 _indices[_indexCount++] = i + 1;
             }
+
+            Status = ChunkStatus.InvalidVbo;
         }
 
         public void UpdateVbo()
         {
+            Status = ChunkStatus.ProcessUpdateVbo;
+
             // VBO
             GL.GenBuffers(1, out uint vertexHandle);
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexHandle);
@@ -323,6 +330,8 @@ namespace GameApp.Entity
             _vertexs = null;
             _normals = null;
             _texcood = null;
+
+            Status = ChunkStatus.Active;
         }
 
         public void SetBlock(Vector3 blockChunkPosition, Block block)
@@ -339,24 +348,33 @@ namespace GameApp.Entity
                 return;
 
             _map[x, y, z] = block;
-            IsVisiable = false;
-            IsLoaded = false;
+            Status = ChunkStatus.InvalidMesh;
         }
 
         public override void OnTick(float dt)
         {
             base.OnTick(dt);
 
-            if (IsLoaded && IsLoadedStarted)
+            if (!Visiable)
+                return;
+
+            switch (Status)
             {
-                UpdateVbo();
-                IsLoadedStarted = false;
-                IsVisiable = true;
+                case ChunkStatus.InvalidGenerated:
+                case ChunkStatus.InvalidMesh:
+                    ChunkManager.EnqueueChunkToUpdate(this);
+                    break;
+                case ChunkStatus.InvalidVbo:
+                    UpdateVbo();
+                    break;
             }
         }
 
         public override void OnRender()
         {
+            if (_vaoHandle == 0)
+                return;
+
             base.OnRender();
 
             GL.ActiveTexture(TextureUnit.Texture0);

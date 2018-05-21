@@ -9,7 +9,7 @@ namespace GameCore.Entity
         public readonly List<Entity> Childrens = new List<Entity>();
         public World World { get; set; }
 
-        public bool IsVisiable { get; set; } = true;
+        public bool Visiable { get; set; } = true;
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Entity Parrent { get; set; }
@@ -80,7 +80,7 @@ namespace GameCore.Entity
         {
             foreach (var obj in Childrens)
             {
-                if (obj.IsVisiable)
+                if (obj.Visiable)
                     obj.OnRender();
             }
         }

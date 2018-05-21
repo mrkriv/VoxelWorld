@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using GameApp.Entity.Global;
+using GameApp.Entity;
 using GameApp.Services;
 using GameCore.Entity;
 using GameCore.GUI;
@@ -17,16 +17,16 @@ namespace GameApp
         static void Main()
         {
             var di = new DependencyInjection();
+            var cfg = JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json", Encoding.UTF8));
 
-            di.AddSinglton(JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json", Encoding.UTF8)));
-            
             di.AddSinglton<AppWindow, VoxelWorldWindow>();
+            di.AddTransient<World, VoxelWorld>();
             di.AddSinglton<InputManager>();
             di.AddSinglton<RootControl>();
             di.AddSinglton<MaterialManager>();
             di.AddSinglton<TextureManager>();
             di.AddSinglton<FontManager>();
-            di.AddTransient<World, VoxelWorld>();
+            di.AddSinglton(cfg);
 
             var game = di.GetService<AppWindow>();
             game.Run();

@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Additional" />
+    <Folder Include="Physics" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System;
 using GameApp.EMath;
-using GameApp.Entity.Global;
 using GameCore.EMath;
 using GameCore.Entity;
 using GameCore.GUI;
@@ -49,7 +48,7 @@ namespace GameApp.Entity.Characters
         {
             if (button == MouseButton.Left)
             {
-                if (_forwardRayTrace.Chunk != null && _forwardRayTrace.Chunk.IsVisiable)
+                if (_forwardRayTrace.Chunk != null && _forwardRayTrace.Chunk.Visiable)
                 {
                     _forwardRayTrace.Chunk.SetBlock(_forwardRayTrace.BlockChunkPosition, Block.FindByName("void"));
                 }

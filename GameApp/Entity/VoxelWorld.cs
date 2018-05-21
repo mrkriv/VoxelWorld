@@ -4,7 +4,7 @@ using GameCore.GUI;
 using GameCore.Render;
 using GameCore.Services;
 
-namespace GameApp.Entity.Global
+namespace GameApp.Entity
 {
     public class VoxelWorld : World
     {
@@ -30,7 +30,7 @@ namespace GameApp.Entity.Global
             AtachObjectToWorld(new Grid());
             
             Control.AttachInFile(RootControl, "debug_menu");
-            //RootControl.AttachControl(new CursorControl());
+            RootControl.AttachControl(new CursorControl());
         }
     }
 }
