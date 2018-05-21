@@ -38,7 +38,7 @@ namespace GameCore.GUI
 
         public void OnAttach(World world)
         {
-            Material = MaterialManager.Load<UserInterfaceMaterial>();
+            Material = MaterialManager.Load<UserInterface>();
             World = world;
 
             var vertexs = new[]

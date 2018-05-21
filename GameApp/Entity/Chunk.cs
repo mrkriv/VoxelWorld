@@ -1,7 +1,5 @@
-﻿using System;
-using GameCore.EMath;
+﻿using GameCore.EMath;
 using GameCore.Render;
-using GameCore.Render.Materials;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -9,18 +7,14 @@ namespace GameApp.Entity
 {
     public enum ChunkStatus
     {
-        InvalidGenerated,
-        ProcessGenerated,
-
         InvalidMesh,
         ProcessUpdateMesh,
-
         Active,
     }
 
     public class Chunk : GameCore.Entity.Entity
     {
-        private BlockMaterial _material;
+        private GameCore.Render.Materials.Block _material;
         private Texture _diffTexture;
         private Matrix4 _transform;
         private Block[,,] _map;
@@ -42,7 +36,7 @@ namespace GameApp.Entity
 
         public Chunk(int x, int y)
         {
-            Status = ChunkStatus.InvalidGenerated;
+            Status = ChunkStatus.InvalidMesh;
             X = x;
             Y = y;
         }
@@ -51,9 +45,7 @@ namespace GameApp.Entity
         {
             base.OnBeginPlay();
 
-            _map = new Block[ChunkSizeH, ChunkSizeH, ChunkSizeV];
-
-            _material = World.MaterialManager.Load<BlockMaterial>();
+            _material = World.MaterialManager.Load<GameCore.Render.Materials.Block>();
             _diffTexture = World.TextureManager.Load("terrain");
 
             _transform = Matrix4.CreateTranslation(X * ChunkSizeH, Y * ChunkSizeH, 0) *
@@ -62,7 +54,7 @@ namespace GameApp.Entity
 
         public void Generated()
         {
-            Status = ChunkStatus.ProcessGenerated;
+            _map = new Block[ChunkSizeH, ChunkSizeH, ChunkSizeV];
             var rand = new Noise(10);
 
             var blockGrass = Block.FindByName("grass");
@@ -93,13 +85,14 @@ namespace GameApp.Entity
                     }
                 }
             }
-
-            Status = ChunkStatus.InvalidMesh;
         }
 
         public void UpdateMesh()
         {
             Status = ChunkStatus.ProcessUpdateMesh;
+
+            if (_map == null)
+                Generated();
 
             var vertexs = new Vector3[4 * 6 * ChunkSizeH * ChunkSizeH * ChunkSizeV];
             var normals = new Vector3[vertexs.Length];
@@ -108,7 +101,7 @@ namespace GameApp.Entity
             var vertexsCount = 0;
             var normalsCount = 0;
             var texcoodCount = 0;
-                
+            
             for (var x = 0; x < ChunkSizeH; x++)
             {
                 for (var y = 0; y < ChunkSizeH; y++)
@@ -167,7 +160,6 @@ namespace GameApp.Entity
 
                         if (GetBlockLocalSpace(x, y + 1, z).Id == 0)
                         {
-
                             vertexs[vertexsCount++] = new Vector3(x, y + 1, z); //left
                             vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z);
                             vertexs[vertexsCount++] = new Vector3(x, y + 1, z + 1);
@@ -183,7 +175,6 @@ namespace GameApp.Entity
 
                         if (GetBlockLocalSpace(x + 1, y, z).Id == 0)
                         {
-
                             vertexs[vertexsCount++] = new Vector3(x + 1, y, z); //back
                             vertexs[vertexsCount++] = new Vector3(x + 1, y + 1, z);
                             vertexs[vertexsCount++] = new Vector3(x + 1, y, z + 1);
@@ -199,7 +190,6 @@ namespace GameApp.Entity
 
                         if (GetBlockLocalSpace(x - 1, y, z).Id == 0)
                         {
-
                             vertexs[vertexsCount++] = new Vector3(x, y, z); //front
                             vertexs[vertexsCount++] = new Vector3(x, y + 1, z);
                             vertexs[vertexsCount++] = new Vector3(x, y, z + 1);
@@ -216,16 +206,15 @@ namespace GameApp.Entity
                 }
             }
 
-            Array.Resize(ref vertexs, vertexsCount);
-            Array.Resize(ref normals, normalsCount);
-            Array.Resize(ref texcood, texcoodCount);
-            
-            _mesh = new Mesh(vertexs, normals, texcood);
+            _mesh = new Mesh(vertexs, normals, texcood, vertexsCount);
             Status = ChunkStatus.Active;
         }
 
         public Block GetBlockLocalSpace(int x, int y, int z)
         {
+            if(_map == null)
+                return new Block();
+            
             if (z < 0 || z >= ChunkSizeV)
                 return new Block();
 
@@ -258,6 +247,9 @@ namespace GameApp.Entity
 
         public void SetBlock(int x, int y, int z, Block block)
         {
+            if(_map == null)
+                return;
+            
             if (z < 0 || z >= ChunkSizeV)
                 return;
 
@@ -275,13 +267,8 @@ namespace GameApp.Entity
             if (!Visiable)
                 return;
 
-            switch (Status)
-            {
-                case ChunkStatus.InvalidGenerated:
-                case ChunkStatus.InvalidMesh:
-                    ChunkManager.EnqueueChunkToUpdate(this);
-                    break;
-            }
+            if (Status == ChunkStatus.InvalidMesh)
+                ChunkManager.EnqueueChunkToUpdate(this);
         }
 
         public override void OnRender()

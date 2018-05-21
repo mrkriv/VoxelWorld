@@ -8,7 +8,7 @@ namespace GameCore.Render
 {
     public class MaterialManager
     {
-        private readonly Dictionary<string, BaseMaterial> _storage = new Dictionary<string, BaseMaterial>();
+        private readonly Dictionary<string, MaterialBase> _storage = new Dictionary<string, MaterialBase>();
         private readonly Config _config;
 
         public MaterialManager(Config config)
@@ -16,9 +16,9 @@ namespace GameCore.Render
             _config = config;
         }
 
-        public T Load<T>() where T : BaseMaterial
+        public T Load<T>() where T : MaterialBase
         {
-            var defaultNameProp = typeof(T).GetProperty(nameof(BaseMaterial.DefaultShaderName));
+            var defaultNameProp = typeof(T).GetProperty(nameof(MaterialBase.DefaultShaderName));
 
             if (defaultNameProp == null)
                 throw new NotSupportedException($"Material type {typeof(T).Name} is not support default name");
@@ -28,7 +28,7 @@ namespace GameCore.Render
             return Load<T>(defaultName);
         }
 
-        public T Load<T>(string name) where T : BaseMaterial
+        public T Load<T>(string name) where T : MaterialBase
         {
             if (_storage.ContainsKey(name))
                 return _storage[name] as T;
@@ -36,7 +36,7 @@ namespace GameCore.Render
             var fs = Path.Combine(_config.Path.Shaders, name, "fs.glsl");
             var vs = Path.Combine(_config.Path.Shaders, name, "vs.glsl");
 
-            var mtl = Activator.CreateInstance(typeof(T), fs, vs) as BaseMaterial;    //todo: поменять на что то более производительное
+            var mtl = Activator.CreateInstance(typeof(T), fs, vs) as MaterialBase;    //todo: поменять на что то более производительное
             _storage.Add(name, mtl);
 
             return mtl as T;

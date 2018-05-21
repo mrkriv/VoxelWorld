@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace GameCore.Render.Materials
 {
-    public class UserInterfaceMaterial : BaseMaterial
+    public class UserInterface : MaterialBase
     {
         public new static string DefaultShaderName => "gui";
         
@@ -15,7 +15,7 @@ namespace GameCore.Render.Materials
         [MateriaParam] public Color4 Color { get; set; }
         [MateriaParam] public bool UseTexture { get; set; }
         
-        public UserInterfaceMaterial(string fsPath, string vsPath) : base(fsPath, vsPath)
+        public UserInterface(string fsPath, string vsPath) : base(fsPath, vsPath)
         {
         }
 

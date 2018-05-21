@@ -10,24 +10,26 @@ namespace GameCore.Render
         private Vector3[] _vertexs;
         private Vector3[] _normals;
         private Vector2[] _texcood;
+        private int _vertexsCount;
+        private int _indexCount;
         private int[] _indices;
         private uint _vaoHandle;
-        private int _indexCount;
 
-        public Mesh(Vector3[] vertexs, Vector3[] normals, Vector2[] texcood, int[] indices = null)
+        public Mesh(Vector3[] vertexs, Vector3[] normals, Vector2[] texcood, int vertexsCount = 0, int[] indices = null)
         {
             _vertexs = vertexs;
             _normals = normals;
             _texcood = texcood;
+            _vertexsCount = vertexsCount != 0 ? vertexsCount : _vertexs.Length;
             _indices = indices ?? AutoBuildIndices();
         }
 
         private int[] AutoBuildIndices()
         {
-            var indices = new int[_vertexs.Length * 6 / 4];
+            var indices = new int[_vertexsCount * 6 / 4];
             _indexCount = 0;
 
-            for (var i = 0; i < _vertexs.Length; i += 4)
+            for (var i = 0; i < _vertexsCount; i += 4)
             {
                 indices[_indexCount++] = i + 0;
                 indices[_indexCount++] = i + 1;
@@ -41,31 +43,27 @@ namespace GameCore.Render
             return indices;
         }
 
-        private void UpdateVbo(BlockMaterial material)
+        private void UpdateVbo(MaterialBase material)
         {
             // VBO
             GL.GenBuffers(1, out uint vertexHandle);
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_vertexs.Length * Vector3.SizeInBytes),
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(_vertexsCount * Vector3.SizeInBytes),
                 _vertexs, BufferUsageHint.StaticDraw);
 
             GL.GenBuffers(1, out uint normalsHandle);
             GL.BindBuffer(BufferTarget.ArrayBuffer, normalsHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_normals.Length * Vector3.SizeInBytes),
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(_vertexsCount * Vector3.SizeInBytes),
                 _normals, BufferUsageHint.StaticDraw);
 
             GL.GenBuffers(1, out uint texcoodHandle);
             GL.BindBuffer(BufferTarget.ArrayBuffer, texcoodHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                new IntPtr(_texcood.Length * Vector2.SizeInBytes),
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(_vertexsCount * Vector2.SizeInBytes),
                 _texcood, BufferUsageHint.StaticDraw);
 
             GL.GenBuffers(1, out uint indexHandle);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexHandle);
-            GL.BufferData(BufferTarget.ElementArrayBuffer,
-                new IntPtr(sizeof(int) * _indices.Length),
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(int) * _indices.Length),
                 _indices, BufferUsageHint.StaticDraw);
 
             // VAO
@@ -96,8 +94,8 @@ namespace GameCore.Render
             _texcood = null;
             _indices = null;
         }
-
-        public void Render(BlockMaterial material)
+ 
+        public void Render(Block material)
         {
             if (_vertexs != null)
                 UpdateVbo(material);

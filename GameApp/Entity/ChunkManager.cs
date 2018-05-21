@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using GameApp.EMath;
 using GameCore.EMath;
@@ -45,10 +46,8 @@ namespace GameApp.Entity
                 {
                     if (chunk.Status == ChunkStatus.InvalidMesh)
                         chunk.UpdateMesh();
-                    else if (chunk.Status == ChunkStatus.InvalidGenerated)
-                        chunk.Generated();
                 }
-                Thread.Sleep(16);
+                Thread.Sleep(10);
             }
         }
 
@@ -81,10 +80,11 @@ namespace GameApp.Entity
 
             return chunk;
         }
-        
+
         public void EnqueueChunkToUpdate(Chunk chunk)
         {
-            _updateQueue.Enqueue(chunk);
+            if (!_updateQueue.Contains(chunk))
+                _updateQueue.Enqueue(chunk);
         }
 
         public override void OnTick(float dt)

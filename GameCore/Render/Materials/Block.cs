@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace GameCore.Render.Materials
 {
-    public class BlockMaterial : BaseMaterial
+    public class Block : MaterialBase
     {
         public new static string DefaultShaderName => "block";
 
@@ -13,7 +13,7 @@ namespace GameCore.Render.Materials
         [MateriaParam] public Matrix4 Projection { get; set; }
         [MateriaParam] public Texture DiffTexture { get; set; }
 
-        public BlockMaterial(string fsPath, string vsPath) : base(fsPath, vsPath)
+        public Block(string fsPath, string vsPath) : base(fsPath, vsPath)
         {
             Model = Matrix4.Identity;
         }

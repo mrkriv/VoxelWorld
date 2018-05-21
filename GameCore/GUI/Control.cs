@@ -36,7 +36,7 @@ namespace GameCore.GUI
         public GuiVector Size { get; set; }
         public TextureCoord TextureCoord { get; set; }
         public Color4 Color { get; set; }
-        public UserInterfaceMaterial Material { get; set; }
+        public UserInterface Material { get; set; }
         public Texture Texture { get; set; }
         public bool IsVisiable { get; set; }
         public string Name { get; set; }

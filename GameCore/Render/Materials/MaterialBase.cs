@@ -13,7 +13,7 @@ namespace GameCore.Render.Materials
     {
     }
 
-    public abstract class BaseMaterial
+    public abstract class MaterialBase
     {
         private readonly Dictionary<PropertyInfo, int> _paramLinks = new Dictionary<PropertyInfo, int>();
         protected readonly int Handle;
@@ -25,7 +25,7 @@ namespace GameCore.Render.Materials
         public abstract void BindInVertexColor();
         public abstract void BindInVertexTexcood();
 
-        public BaseMaterial(string fsPath, string vsPath)
+        public MaterialBase(string fsPath, string vsPath)
         {
             var fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
             var vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
