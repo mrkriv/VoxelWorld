@@ -57,10 +57,14 @@ namespace GameCore.Services
                 _services.Remove(typeof(TBase));
             }
 
+            var implType = typeof(TImpl);
+            if (typeof(TImpl).IsGenericTypeDefinition)
+                implType = null;
+            
             _services.Add(typeof(TBase), new TypeImpl
             {
                 IsSinglton = true,
-                ImplType = typeof(TImpl)
+                ImplType = implType
             });
         }
         
@@ -88,16 +92,35 @@ namespace GameCore.Services
                 _services.Remove(typeBase);
             }
 
+            var implType = typeImplement;
+            if (typeImplement.IsGenericTypeDefinition)
+                implType = null;
+            
             _services.Add(typeBase, new TypeImpl
             {
                 IsSinglton = false,
-                ImplType = typeImplement
+                ImplType = implType
             });
         }
 
+        private TypeImpl GetTypeImpl(Type type)
+        {
+            if (_services.TryGetValue(type, out var result))
+                return result;
+
+            if (type.IsGenericType)
+            {
+                var genericDefinition = type.GetGenericTypeDefinition();
+                if (_services.TryGetValue(genericDefinition, out result))
+                    return result;
+            }
+
+            return null;
+        }
+        
         public bool ContainsService(Type type)
         {
-            return _services.ContainsKey(type);
+            return GetTypeImpl(type) != null;
         }
 
         public T GetService<T>() where T : class
@@ -107,22 +130,22 @@ namespace GameCore.Services
 
         public object GetService(Type type)
         {
-            if (!ContainsService(type))
+            var typeImpl = GetTypeImpl(type);
+
+            if (typeImpl == null)
                 throw new InvalidExpressionException($"Тип {type} не зарегистрирован в DI");
 
-            var tuple = _services[type];
-
-            if (tuple.IsSinglton)
+            var implType = typeImpl.ImplType ?? type;
+            
+            if (typeImpl.IsSinglton)
             {
-                if (tuple.Instance == null)
-                {
-                    tuple.Instance = New(tuple.ImplType);
-                }
-
-                return tuple.Instance;
+                if (typeImpl.Instance == null)
+                    typeImpl.Instance = New(implType);
+                
+                return typeImpl.Instance;
             }
 
-            return New(tuple.ImplType);
+            return New(implType);
         }
 
         private T New<T>() where T : class

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using OpenTK;
 
-namespace GameCore.Render
+namespace GameCore.EMath
 {
     public struct CubeTextureCoord
     {

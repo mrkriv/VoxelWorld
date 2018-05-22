@@ -59,7 +59,7 @@ namespace GameCore.GUI
 
             using (var bitmap = new Bitmap(desc.AtlasWidth, desc.AtlasHeight, PixelFormat.Format32bppArgb))
             {
-               var  font = GetFont(fontPath, desc);
+                var font = GetFont(fontPath, desc);
                 GenerateAtlas(bitmap, desc, font);
 
                 if (desc.DumpAtlasToFile)

@@ -46,7 +46,7 @@ namespace GameCore.GUI
                 new Vector2(0, 0),
                 new Vector2(1, 0),
                 new Vector2(0, 1),
-                new Vector2(1, 1),
+                new Vector2(1, 1)
             };
 
             var texcoods = new[]
@@ -54,7 +54,7 @@ namespace GameCore.GUI
                 new Vector2(0, 0),
                 new Vector2(1, 0),
                 new Vector2(0, 1),
-                new Vector2(1, 1),
+                new Vector2(1, 1)
             };
 
             var indices = new[]

@@ -9,10 +9,10 @@ namespace GameCore.Render
     public class TextureManager
     {
         private readonly Dictionary<string, Texture> _storage = new Dictionary<string, Texture>();
+        private readonly Logger<TextureManager> _logger;
         private readonly Config _config;
-        private readonly Logger _logger;
 
-        public TextureManager(Config config, Logger logger)
+        public TextureManager(Config config, Logger<TextureManager> logger)
         {
             _config = config;
             _logger = logger;
@@ -27,16 +27,16 @@ namespace GameCore.Render
             
             if (!File.Exists(path))
             {
-                _logger.Error($"Not found texture {name}");
+                _logger.Error($"File not found {name}");
                 return null;
             }
 
             using (var bitmap = new Bitmap(path))
             {
                 var texture = new Texture(name, bitmap);
-                _logger.Log($"Load texture {name} x{texture.Handle}");
                 _storage.Add(name, texture);
 
+                _logger.Log($"Load '{name}'");
                 return texture;
             }
         }

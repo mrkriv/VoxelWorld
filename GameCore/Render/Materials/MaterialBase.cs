@@ -18,7 +18,7 @@ namespace GameCore.Render.Materials
         private readonly Dictionary<PropertyInfo, int> _paramLinks = new Dictionary<PropertyInfo, int>();
         protected readonly int Handle;
         
-        public static string DefaultShaderName => null;
+        public static string DefaultShaderName => null;    //todo: заменить аттрибутом
 
         public abstract void BindInVertexPosition();
         public abstract void BindInVertexNormal();

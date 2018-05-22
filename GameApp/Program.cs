@@ -27,9 +27,12 @@ namespace GameApp
             di.AddSinglton<MaterialManager>();
             di.AddSinglton<TextureManager>();
             di.AddSinglton<FontManager>();
+            di.AddTransient(typeof(Logger<>));
             di.AddSinglton<Logger>();
             di.AddSinglton(cfg);
 
+            di.GetService<Logger<TextureManager>>();
+            
             var game = di.GetService<AppWindow>();
             game.Run();
         }

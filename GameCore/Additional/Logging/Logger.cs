@@ -7,8 +7,8 @@ namespace GameCore.Additional.Logging
 {
     public class Logger
     {
-        private List<ILoggerTarget> _targets { get; set; }
-        private Config _config;
+        private readonly List<ILoggerTarget> _targets;
+        private readonly Config _config;
 
         public Logger(Config config, ServiceProvider serviceProvider)
         {

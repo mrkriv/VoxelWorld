@@ -1,4 +1,5 @@
 ﻿using System;
+using GameCore.EMath;
 using GameCore.Render;
 
 namespace GameApp.Entity
