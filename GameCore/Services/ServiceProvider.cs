@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GameCore.Services
 {
-    public class DependencyInjection
+    public class ServiceProvider
     {
         private readonly Dictionary<Type, TypeImpl> _services = new Dictionary<Type, TypeImpl>();
 
@@ -16,7 +16,7 @@ namespace GameCore.Services
             public Type ImplType { get; set; }
         };
         
-        public DependencyInjection()
+        public ServiceProvider()
         {
             AddSinglton(this);
         }
@@ -66,23 +66,38 @@ namespace GameCore.Services
         
         public void AddTransient<T>() where T : class
         {
-            AddTransient<T, T>();
+            AddTransient(typeof(T), typeof(T));
         }
 
         public void AddTransient<TBase, TImpl>()
             where TBase : class
             where TImpl : TBase
         {
-            if (_services.ContainsKey(typeof(TBase)))
+            AddTransient(typeof(TBase), typeof(TImpl));
+        }
+
+        public void AddTransient(Type type)
+        {
+            AddTransient(type, type);
+        }
+
+        public void AddTransient(Type typeBase, Type typeImplement)
+        {
+            if (_services.ContainsKey(typeBase))
             {
-                _services.Remove(typeof(TBase));
+                _services.Remove(typeBase);
             }
 
-            _services.Add(typeof(TBase), new TypeImpl
+            _services.Add(typeBase, new TypeImpl
             {
                 IsSinglton = false,
-                ImplType = typeof(TImpl)
+                ImplType = typeImplement
             });
+        }
+
+        public bool ContainsService(Type type)
+        {
+            return _services.ContainsKey(type);
         }
 
         public T GetService<T>() where T : class
@@ -92,8 +107,8 @@ namespace GameCore.Services
 
         public object GetService(Type type)
         {
-            if (!_services.ContainsKey(type))
-                return null;
+            if (!ContainsService(type))
+                throw new InvalidExpressionException($"Тип {type} не зарегистрирован в DI");
 
             var tuple = _services[type];
 
@@ -130,9 +145,6 @@ namespace GameCore.Services
             foreach (var parameter in ctor.GetParameters())
             {
                 var serv = GetService(parameter.ParameterType);
-                if (serv == null)
-                    throw new InvalidExpressionException($"Сервис {parameter.ParameterType.FullName} не зарегистрирован в DI");
-
                 ctorParams.Add(serv);
             }
 

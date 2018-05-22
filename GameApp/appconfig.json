@@ -7,9 +7,14 @@
     "Font": "Font"
   },
   "Chunk": {
-    "ViewDistance": 7,
+    "ViewDistance": 3,
     "ChunkSizeW": 16,
     "ChunkSizeH": 96,
     "ChunkScale": 5
+  },
+  "LoggerConfig": {
+    "TargetTypes": [ 
+      "GameCore.Additional.Logging.LoggerConsoleTarget, GameCore"
+    ]
   }
 }

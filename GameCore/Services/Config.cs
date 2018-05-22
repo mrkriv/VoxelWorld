@@ -1,9 +1,12 @@
-﻿namespace GameCore.Services
+﻿using GameCore.Additional.Logging;
+
+namespace GameCore.Services
 {
     public class Config
     {
         public PathConfig Path { get; set; }
         public ChunkConfig Chunk { get; set; }
+        public LoggerConfig LoggerConfig { get; set; } // todo: Сделать фабрику для получения конфигов
 
         public class PathConfig
         {

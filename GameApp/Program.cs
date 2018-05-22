@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using GameApp.Entity;
 using GameApp.Services;
+using GameCore.Additional.Logging;
 using GameCore.Entity;
 using GameCore.GUI;
 using GameCore.Render;
@@ -16,7 +17,7 @@ namespace GameApp
         [STAThread]
         static void Main()
         {
-            var di = new DependencyInjection();
+            var di = new ServiceProvider();
             var cfg = JsonConvert.DeserializeObject<Config>(File.ReadAllText("appconfig.json", Encoding.UTF8));
 
             di.AddSinglton<AppWindow, VoxelWorldWindow>();
@@ -26,6 +27,7 @@ namespace GameApp
             di.AddSinglton<MaterialManager>();
             di.AddSinglton<TextureManager>();
             di.AddSinglton<FontManager>();
+            di.AddSinglton<Logger>();
             di.AddSinglton(cfg);
 
             var game = di.GetService<AppWindow>();
